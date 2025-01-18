@@ -1,20 +1,20 @@
 <template>
-    <div class="container">
-      <div class="form__group field">
-        <div class="input-container">
+    <div class="q-container">
+      <div class="q-form__group field">
+        <div class="q-input-container">
           <input
-            type="input"
-            class="form__field"
-            placeholder="Answer"
-            name="answer"
-            id="answer"
+            type="q-input"
+            class="q-form__field"
+            placeholder="q-Answer"
+            name="q-answer"
+            id="q-answer"
             required
             autocomplete="off"
             v-model="userInput"
             @keyup.enter="submitAnswer"
           />
-          <label for="answer" class="form__label">Answer</label>
-          <button class="submit-button" @click="submitAnswer">></button>
+          <label for="q-answer" class="q-form__label">Answer</label>
+          <button class="q-submit-button" @click="submitAnswer">></button>
         </div>
       </div>
     </div>
@@ -35,7 +35,7 @@ export default {
             this.userInput = ""; // Clear the input after submission
 
             // Explicitly blur the input to reset placeholder state
-            const inputElement = document.getElementById("answer");
+            const inputElement = document.getElementById("q-answer");
             if (inputElement) {
                 inputElement.value = ""; // Clear the DOM value
                 inputElement.blur(); // Trigger placeholder behavior
@@ -52,7 +52,7 @@ $secondary: #387bef;
 $white: #fff;
 $gray: #9b9b9b;
 
-.container {
+.q-container {
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -62,7 +62,7 @@ $gray: #9b9b9b;
   color: $white;
 }
 
-.form__group {
+.q-form__group {
   position: relative;
   padding: 15px 0 0;
   margin-top: -100px;
@@ -70,7 +70,7 @@ $gray: #9b9b9b;
   user-select: none;
 }
 
-.form__field {
+.q-form__field {
   font-family: inherit;
   width: 100%;
   border: 0;
@@ -86,7 +86,7 @@ $gray: #9b9b9b;
     color: transparent;
   }
 
-  &:placeholder-shown ~ .form__label {
+  &:placeholder-shown ~ .q-form__label {
     font-size: 1.3rem;
     cursor: text;
     top: 20px;
@@ -94,7 +94,7 @@ $gray: #9b9b9b;
   }
 }
 
-.submit-button {
+.q-submit-button {
   position: absolute;
   right: -15px;
   padding: 5px 15px;
@@ -111,7 +111,7 @@ $gray: #9b9b9b;
   }
 }
 
-.form__label {
+.q-form__label {
   position: absolute;
   top: 0;
   display: block;
@@ -121,8 +121,8 @@ $gray: #9b9b9b;
   user-select: none;
 }
 
-.form__field:focus {
-  ~ .form__label {
+.q-form__field:focus {
+  ~ .q-form__label {
     position: absolute;
     top: 0;
     display: block;
@@ -139,7 +139,7 @@ $gray: #9b9b9b;
 }
 
 
-.form__field {
+.q-form__field {
   &:required,
   &:invalid {
     box-shadow: none;
