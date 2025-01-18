@@ -1,4 +1,7 @@
 <template>
+  <div>
+    <router-view></router-view>
+  </div>
   <div class="main-text">
     <h3>You can't always stick to the past
     <br>You can't always think about the future. 
@@ -7,7 +10,7 @@
     </h3>
   </div>
   <div class="button-container">
-    <button>Start your goal now</button>
+    <button data-id="start">Start your goal now</button>
     <button>Help others start their goal</button>
   </div>
   <div class = "website-details">
@@ -62,6 +65,19 @@ export default {
         createSpark(e.clientX, e.clientY); 
       }
     });
+    // Light explosion effect
+    const startButton = document.querySelector('button[data-id="start"]');
+    startButton.addEventListener('click', () => {
+      const explosion = document.createElement('div');
+      explosion.classList.add('light-explosion');
+      document.body.appendChild(explosion);
+
+      //Remove explosion after animation and redirect
+      setTimeout(() => {
+        explosion.remove();
+        window.location.href = '/questions'; 
+        }, 1500); 
+      });
   },
 };
 </script>
@@ -125,7 +141,7 @@ html, body {
   justify-content: center;
   align-items: center;
   gap: 50px;
-  margin-top: 200px; 
+  margin-top: 240px; 
   font-family: 'Nunito', sans-serif;
 
 }
@@ -138,7 +154,7 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  background-color: #0f243f; /* Dark green color */
+  background-color: #0f243f; 
   color: #ffffff66;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 100);
@@ -156,8 +172,40 @@ button:hover {
   color: #228d91db;
   font-family: 'Nunito', sans-serif;
   text-align: center;
-  margin-top: 280px;
+  margin-top: 250px;
   user-select: none;
 }
+
+/* Animation for first button */
+.light-explosion {
+  position: fixed;
+  top: 50%;
+  left: 48.8%; 
+  width: 10px; 
+  height: 10px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.348) 0%, rgba(255, 255, 255, 0.348) 70%);
+  border-radius: 50%;
+  opacity: 0%;
+  z-index: 9999;
+  animation: explosion 3s ease-out forwards;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+@keyframes explosion {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(250);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1); 
+  }
+}
+
 
 </style>
