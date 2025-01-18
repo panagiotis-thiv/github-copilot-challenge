@@ -38,17 +38,21 @@ export default {
       ],
       currentTip: "Explain what you want to achieve, create, build. It could be something like making a game or even getting into sports.", 
       question: "What's your goal?",
+      questionCount: 0,
+      maxQuestions: 4,
     };
   },
   methods: {
     async submitAnswer() {
       if (this.userInput.trim()) {
+        this.questionCount++;
+
         try {
           // Send user input to the backend API
           const response = await fetch('http://localhost:5000/api/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: this.userInput }),
+            body: JSON.stringify({prompt: this.userInput }),
           });
 
           if (!response.ok) {
@@ -56,7 +60,17 @@ export default {
           }
 
           const data = await response.json();
-          this.question = data.response;
+          if (data.response) {
+            this.question = data.response;
+          } 
+          else {
+            throw new Error("Invalid response from API");
+          }
+
+          if (this.questionCount >= this.maxQuestions) {
+            this.$router.push({ name: 'SummaryPage' });
+          }
+
         } catch (error) {
           console.error("Error:", error.message);
         }
