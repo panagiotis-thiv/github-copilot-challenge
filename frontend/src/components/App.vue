@@ -91,7 +91,7 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: #1a1a1a;
+  background-color: #222222;
 }
 
 .glow {
@@ -124,6 +124,9 @@ html, body {
     opacity: 0;
   }
 }
+</style>
+
+<style scoped>
 
 .main-text {
   color: #ffffff92;
@@ -172,10 +175,11 @@ button:hover {
   color: #228d91db;
   font-family: 'Nunito', sans-serif;
   text-align: center;
-  margin-top: 250px;
+  margin-top: 200px;
   user-select: none;
 }
-
+</style>
+<style>
 /* Animation for first button */
 .light-explosion {
   position: fixed;
@@ -206,6 +210,4 @@ button:hover {
     transform: scale(1); 
   }
 }
-
-
 </style>
