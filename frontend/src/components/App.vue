@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <h1>Sample Text</h1>
+  <div>
+    <h1>Just a message</h1>
   </div>
 </template>
 
@@ -10,20 +10,17 @@ export default {
 };
 </script>
 
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+<style>
 
-.container {
-  background-color: #1a1a1a; /* Slightly lighter than absolute black */
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  font-family: 'Nunito', sans-serif;
+html, body {
+  background-color: #1a1a1a; /* Black background */
 }
 
 h1 {
   color: #ffffff;
+  font-family: 'Nunito', sans-serif;
+  text-align: center;
   margin-top: 20px;
 }
+
 </style>
