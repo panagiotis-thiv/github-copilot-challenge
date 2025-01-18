@@ -13,34 +13,61 @@
             v-model="userInput"
             @keyup.enter="submitAnswer"
           />
-          <label for="q-answer" class="q-form__label">Answer</label>
+          <label for="q-answer" class="q-form__label">{{ question }}</label>
           <button class="q-submit-button" @click="submitAnswer">></button>
         </div>
       </div>
+      <div class="q-tip">
+        <h2>{{ currentTip }}</h2>
+      </div>
     </div>
-  </template>
+</template>
 
 <script>
 export default {
   name: 'Questions',
   data() {
     return {
-      userInput: "", // Stores the user's input
+      userInput: "", 
+      tips: [
+        "Focus on one goal at a time.",
+        "Think about what truly matters to you.",
+        "Small steps lead to big changes.",
+        "Be specific with your goals to make them achievable.",
+        "Consistency is the key to success.",
+      ],
+      currentTip: "Explain what you want to achieve, create, build. It could be something like making a game or even getting into sports.", 
+      question: "What's your goal?",
     };
   },
   methods: {
-    submitAnswer() {
-        if (this.userInput.trim()) {
-            console.log("User Answer:", this.userInput); // Replace with your logic
-            this.userInput = ""; // Clear the input after submission
+    async submitAnswer() {
+      if (this.userInput.trim()) {
+        try {
+          // Send user input to the backend API
+          const response = await fetch('http://localhost:5000/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: this.userInput }),
+          });
 
-            // Explicitly blur the input to reset placeholder state
-            const inputElement = document.getElementById("q-answer");
-            if (inputElement) {
-                inputElement.value = ""; // Clear the DOM value
-                inputElement.blur(); // Trigger placeholder behavior
-            }
+          if (!response.ok) {
+            throw new Error('Failed to fetch the next question');
+          }
+
+          const data = await response.json();
+          this.question = data.response;
+        } catch (error) {
+          console.error("Error:", error.message);
         }
+
+        // Clear the input field after submission
+        this.userInput = ""; 
+        const inputElement = document.getElementById("q-answer");
+        if (inputElement) {
+          inputElement.blur(); 
+        }
+      }
     },
   },
 };
@@ -145,4 +172,32 @@ $gray: #9b9b9b;
     box-shadow: none;
   }
 }
+
+
+//Tip Message
+.q-tip {
+  user-select: none;
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: $gray;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  opacity: 0.8;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 0.8;
+    transform: translateX(-50%);
+  }
+}
+
 </style>
