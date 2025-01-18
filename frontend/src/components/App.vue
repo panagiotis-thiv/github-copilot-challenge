@@ -1,7 +1,6 @@
 <template>
-  <div>
-    <h1>Welcome to My OpenAI Website</h1>
-    <p>This is the main application component.</p>
+  <div class="container">
+    <h1>Sample Text</h1>
   </div>
 </template>
 
@@ -12,7 +11,19 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
+.container {
+  background-color: #1a1a1a; /* Slightly lighter than absolute black */
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: 'Nunito', sans-serif;
+}
+
 h1 {
-  color: #42b983;
+  color: #ffffff;
+  margin-top: 20px;
 }
 </style>
