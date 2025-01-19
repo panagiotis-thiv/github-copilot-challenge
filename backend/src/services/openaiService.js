@@ -117,14 +117,16 @@ const generateTasks = async () => {
                     2. Choose a game engine 
                     3. Design the game mechanics, etc. 
                     4. Learning the programming languages required.
-                    Format the response as a numbered list.`,
+                    Keep the tasks short and concise.
+                    Dont type anything else. Just the tasks.`,
         },
       ],
-      max_tokens: 150,
+      max_tokens: 300,
       temperature: 0.7,
     });
 
-    return response.choices[0].message.content.trim();
+    const taskList = response.choices[0].message.content.trim().split('\n');
+    return taskList.map(task => task.replace(/^\d+\.\s*/, '')); 
   } catch (error) {
     console.error('Error with OpenAI API:', error.response?.data || error.message);
     throw new Error('Failed to generate tasks');

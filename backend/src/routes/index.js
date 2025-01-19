@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { generateResponse, generateMainGoal, generateSummary } = require('../services/openaiService');
+const { generateResponse, generateMainGoal, generateSummary, generateTasks } = require('../services/openaiService');
 
 //To test if backend is working
 router.get('/health', (req, res) => {
@@ -28,6 +28,9 @@ router.post('/generate', async (req, res) => {
       else if (type === 'summary') {
         aiResponse = await generateSummary();
       } 
+      else if (type === 'ideas_tasks') {
+        aiResponse = await generateTasks();
+      }
       else if (type === 'questions') {
         if (!prompt) {
             return res.status(400).json({ error: 'Prompt is required for type "response"' });

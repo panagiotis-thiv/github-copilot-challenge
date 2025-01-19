@@ -127,6 +127,44 @@ export default {
     }
   },
   methods: {
+    async generateIdeasTasks() {
+    try {
+        const response = await fetch('http://localhost:5000/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'ideas_tasks' }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch AI-generated tasks');
+        }
+
+        const data = await response.json();
+        
+        if (data.tasks && Array.isArray(data.tasks)) {
+            const ideasIndex = this.cards.findIndex(card => card.class === 'ideas');
+            if (ideasIndex !== -1) {
+                data.tasks.forEach(task => {
+                    this.cards[ideasIndex].tasks.push({
+                        id: this.taskCounter++,  
+                        name: task,  
+                        editing: false,
+                        category: 'ideas'
+                    });
+                });
+
+                // Update localStorage
+                localStorage.setItem('cards', JSON.stringify(this.cards));
+                localStorage.setItem('taskCounter', JSON.stringify(this.taskCounter));
+            }
+        } else {
+            throw new Error('Invalid response format');
+        }
+    } catch (error) {
+        console.error('Error generating tasks:', error.message);
+    }
+},
+
     getTaskColor(category) {
       const colors = {
         todo: "#ff6f61",
