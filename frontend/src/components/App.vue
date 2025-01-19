@@ -51,6 +51,8 @@ export default {
 
 <style>
 html, body {
+  transform: none !important;
+  zoom: 1 !important;
   margin: 0;
   padding: 0;
   height: 100%;

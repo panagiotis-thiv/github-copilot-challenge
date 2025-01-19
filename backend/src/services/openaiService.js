@@ -102,6 +102,33 @@ const generateSummary = async () => {
   }
 };
 
+const generateTasks = async () => {
+  try {
+    const response = await client.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        ...conversationHistory,
+        {
+          role: 'system',
+          content: `Based on the user's goal, generate 10 tasks that they need to complete. 
+                    The tasks should be actionable and relevant to their goal. 
+                    For example, if they are making a game, tasks might include: 
+                    1. Define the game concept 
+                    2. Choose a game engine 
+                    3. Design the game mechanics, etc. 
+                    4. Learning the programming languages required.
+                    Format the response as a numbered list.`,
+        },
+      ],
+      max_tokens: 150,
+      temperature: 0.7,
+    });
 
+    return response.choices[0].message.content.trim();
+  } catch (error) {
+    console.error('Error with OpenAI API:', error.response?.data || error.message);
+    throw new Error('Failed to generate tasks');
+  }
+};
 
-module.exports = { generateResponse, generateMainGoal, generateSummary };
+module.exports = { generateResponse, generateMainGoal, generateSummary, generateTasks };
