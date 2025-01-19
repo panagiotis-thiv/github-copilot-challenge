@@ -17,6 +17,8 @@
         </div>
       </div>
     </div>
+    
+    <button class="button-33" @click="navigateToSite">Confirm</button>
 
     <div v-if="error" class="error-message">
       <p>{{ error }}</p>
@@ -96,6 +98,11 @@ export default {
       this.summary = "Unable to fetch the summary data.";
     }
   },
+  methods: {
+    navigateToSite() {
+      this.$router.push({ name: "MainPage" });
+    },
+  }
 };
 </script>
 
@@ -106,7 +113,7 @@ export default {
   text-align: center;
   color: #fff;
   background-color: #222222;
-  font-family: "Poppins", sans-serif;
+  font-family: "Nunito", sans-serif;
 }
 
 h1 {
@@ -273,6 +280,31 @@ h1 {
 
 .noselect {
   user-select: none;
+}
+
+.button-33 {
+  background-color: #87ceeb;
+  border-radius: 100px;
+  box-shadow: rgba(0, 123, 255, .2) 0 -25px 18px -14px inset,rgba(0, 123, 255, .15) 0 1px 2px,rgba(0, 123, 255, .15) 0 2px 4px,rgba(0, 123, 255, .15) 0 4px 8px,rgba(0, 123, 255, .15) 0 8px 16px,rgba(0, 123, 255, .15) 0 16px 32px;
+  color: #004080;
+  cursor: pointer;
+  display: inline-block;
+  font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+  padding: 7px 20px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 250ms;
+  border: 0;
+  font-size: 30px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  margin-top: 70px;
+}
+
+.button-33:hover {
+  box-shadow: rgba(0, 123, 255, .35) 0 -25px 18px -14px inset,rgba(0, 123, 255, .25) 0 1px 2px,rgba(0, 123, 255, .25) 0 2px 4px,rgba(0, 123, 255, .25) 0 4px 8px,rgba(0, 123, 255, .25) 0 8px 16px,rgba(0, 123, 255, .25) 0 16px 32px;
+  transform: scale(1.05) rotate(-1deg);
 }
 
 </style>

@@ -30,16 +30,15 @@ export default {
     return {
       userInput: "", 
       tips: [
-        "Focus on one goal at a time.",
-        "Think about what truly matters to you.",
-        "Small steps lead to big changes.",
-        "Be specific with your goals to make them achievable.",
-        "Consistency is the key to success.",
+        "Sometimes it's better to focus on one goal than many.",
+        `"Well begun is half done".`,
+        "Don't overcomplicate it. Start small, then expand.",
+        "It's amazing what someone can achieve when they put their mind to it.",
       ],
-      currentTip: "Explain what you want to achieve, create, build. It could be something like making a game or even getting into sports.", 
+      currentTip: "Explain what you want to achieve, create, build. It can be something from making a game to making a website.", 
       question: "What's your goal?",
       questionCount: 0,
-      maxQuestions: 4,
+      maxQuestions: 5,
     };
   },
   methods: {
@@ -85,8 +84,15 @@ export default {
         if (inputElement) {
           inputElement.blur(); 
         }
+
+        this.currentTip = this.getRandomTip();
       }
     },
+
+    getRandomTip() {
+      const randomIndex = Math.floor(Math.random() * this.tips.length);
+      return this.tips[randomIndex];
+    }
   },
 };
 </script>
@@ -103,7 +109,7 @@ $gray: #9b9b9b;
   justify-content: center;
   align-items: center;
   background-color: #222222;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Nunito', sans-serif;
   color: $white;
 }
 
