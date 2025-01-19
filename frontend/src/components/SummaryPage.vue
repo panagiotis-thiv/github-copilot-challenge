@@ -37,7 +37,7 @@ export default {
       loadingMainGoal: true,
       loadingDetailedSummary: true,
       error: "",
-      testMode: true,
+      testMode: false,
     };
   },
   async mounted() {
@@ -100,7 +100,7 @@ export default {
   },
   methods: {
     navigateToSite() {
-      this.$router.push({ name: "main" });
+      this.$router.push({ name: "MainPage" });
     },
   }
 };
@@ -299,7 +299,7 @@ h1 {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  margin-top: 70px;
+  margin-top: 200px;
 }
 
 .button-33:hover {

@@ -71,7 +71,11 @@ export default {
           }
 
           if (this.questionCount >= this.maxQuestions) {
-            this.$router.push({ name: 'SummaryPage' });
+            this.question = "Finalizing your answers...";
+
+            setTimeout(() => {
+              this.$router.push({ name: 'SummaryPage' });
+            }, 2000);
           }
 
         } catch (error) {
@@ -156,7 +160,7 @@ $gray: #9b9b9b;
   cursor: pointer;
   border-radius: 0 5px 5px 0;
   transition: background-color 0.3s;
-
+  
   &:hover {
     color: $secondary;
   }
