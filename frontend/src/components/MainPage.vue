@@ -130,7 +130,7 @@ export default {
     }
   },
   mounted() {
-    if (this.$route.query.firstLoad === 'true') {
+    if (this.$route.query.loadAITasks === 'true') {
         console.log('Generating AI tasks');
         this.generateIdeasTasks();
 

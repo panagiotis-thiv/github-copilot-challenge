@@ -1,5 +1,5 @@
 //Imports
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const routes = require('./routes/index');
@@ -13,12 +13,13 @@ const PORT = process.env.PORT || 5000;
 app.use(bodyParser.json());
 //Allows parsing of URL-encoded data
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors()); // Enable CORS for all routes
 
 app.use('/api', routes);
 //Security
 app.use(cors({
-    origin: 'http://localhost:3000', // Allow requests from this origin
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
 }));
 
 app.listen(PORT, () => {
