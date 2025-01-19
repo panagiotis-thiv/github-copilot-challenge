@@ -52,7 +52,10 @@ export default {
           const response = await fetch('http://localhost:5000/api/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({prompt: this.userInput }),
+            body: JSON.stringify({ type: 'questions', prompt: this.userInput }),
+          }).catch((err) => {
+            console.error("Fetch failed:", err.message);
+            throw err;
           });
 
           if (!response.ok) {
@@ -60,6 +63,7 @@ export default {
           }
 
           const data = await response.json();
+
           if (data.response) {
             this.question = data.response;
           } 
@@ -198,7 +202,7 @@ $gray: #9b9b9b;
   text-align: center;
   color: $gray;
   font-size: 1rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Nunito', sans-serif;
   opacity: 0.8;
   animation: fadeIn 0.5s ease-in-out;
 }
