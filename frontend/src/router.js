@@ -6,7 +6,7 @@ import MainPage from './components/MainPage.vue';
 
 const routes = [
   { path: '/', component: HomePage },
-  { path: '/questions', component: QuestionsPage },
+  { path: '/questions', component: QuestionsPage, name: 'QuestionsPage' },
   { path: '/summary', component: SummaryPage, name: 'SummaryPage' },
   { path: '/main', component: MainPage, name: 'MainPage' },
 ];

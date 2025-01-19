@@ -1,26 +1,26 @@
 <template>
-    <div class="q-container">
-      <div class="q-form__group field">
-        <div class="q-input-container">
-          <input
-            type="q-input"
-            class="q-form__field"
-            placeholder="q-Answer"
-            name="q-answer"
-            id="q-answer"
-            required
-            autocomplete="off"
-            v-model="userInput"
-            @keyup.enter="submitAnswer"
-          />
-          <label for="q-answer" class="q-form__label">{{ question }}</label>
-          <button class="q-submit-button" @click="submitAnswer">></button>
-        </div>
-      </div>
-      <div class="q-tip">
-        <h2>{{ currentTip }}</h2>
+  <div class="q-container">
+    <div class="q-form__group field">
+      <div class="q-input-container">
+        <input
+          type="q-input"
+          class="q-form__field"
+          placeholder="q-Answer"
+          name="q-answer"
+          id="q-answer"
+          required
+          autocomplete="off"
+          v-model="userInput"
+          @keyup.enter="submitAnswer"
+        />
+        <label for="q-answer" class="q-form__label">{{ question }}</label>
+        <button class="q-submit-button" @click="submitAnswer">></button>
       </div>
     </div>
+    <div class="q-tip">
+      <h2>{{ currentTip }}</h2>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -29,75 +29,50 @@ export default {
   data() {
     return {
       userInput: "", 
-      tips: [
+      questions: [
+        "Example Question",
+      ],
+      currentTips: [
         "Sometimes it's better to focus on one goal than many.",
         `"Well begun is half done".`,
         "Don't overcomplicate it. Start small, then expand.",
         "It's amazing what someone can achieve when they put their mind to it.",
       ],
       currentTip: "Explain what you want to achieve, create, build. It can be something from making a game to making a website.", 
-      question: "What's your goal?",
-      questionCount: 0,
-      maxQuestions: 5,
+      questionIndex: 0,
+      maxQuestions: 1,
     };
   },
   methods: {
-    async submitAnswer() {
+    submitAnswer() {
       if (this.userInput.trim()) {
-        this.questionCount++;
+        this.questionIndex++;
 
-        try {
-          // Send user input to the backend API
-          const response = await fetch('http://localhost:5000/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: 'questions', prompt: this.userInput }),
-          }).catch((err) => {
-            console.error("Fetch failed:", err.message);
-            throw err;
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch the next question');
-          }
-
-          const data = await response.json();
-
-          if (data.response) {
-            this.question = data.response;
-          } 
-          else {
-            throw new Error("Invalid response from API");
-          }
-
-          if (this.questionCount >= this.maxQuestions) {
-            this.question = "Finalizing your answers...";
-
-            setTimeout(() => {
-              this.$router.push({ name: 'SummaryPage' });
-            }, 2000);
-          }
-
-        } catch (error) {
-          console.error("Error:", error.message);
+        if (this.questionIndex < this.maxQuestions) {
+          this.question = this.questions[this.questionIndex];
+        } else {
+          this.question = "Finalizing your answers...";
+          setTimeout(() => {
+            this.$router.push({ name: 'SummaryPage' });
+          }, 2000);
         }
 
-        // Clear the input field after submission
+        // Clear input and update tip
         this.userInput = ""; 
-        const inputElement = document.getElementById("q-answer");
-        if (inputElement) {
-          inputElement.blur(); 
-        }
-
         this.currentTip = this.getRandomTip();
       }
     },
 
     getRandomTip() {
-      const randomIndex = Math.floor(Math.random() * this.tips.length);
-      return this.tips[randomIndex];
+      const randomIndex = Math.floor(Math.random() * this.currentTips.length);
+      return this.currentTips[randomIndex];
     }
   },
+  computed: {
+    question() {
+      return this.questions[this.questionIndex];
+    }
+  }
 };
 </script>
 
@@ -193,7 +168,6 @@ $gray: #9b9b9b;
   border-image-slice: 1;
 }
 
-
 .q-form__field {
   &:required,
   &:invalid {
@@ -201,8 +175,6 @@ $gray: #9b9b9b;
   }
 }
 
-
-//Tip Message
 .q-tip {
   user-select: none;
   position: absolute;
@@ -227,5 +199,4 @@ $gray: #9b9b9b;
     transform: translateX(-50%);
   }
 }
-
 </style>
