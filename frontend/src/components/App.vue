@@ -51,8 +51,7 @@ export default {
 
 <style>
 html, body {
-  transform: none !important;
-  zoom: 1 !important;
+  zoom: 1;
   margin: 0;
   padding: 0;
   height: 100%;

@@ -10,7 +10,6 @@
             </span>
         </button>
 
-
         <div v-if="pathTasks.length > 0">
             <div class="path-container">
                 <div 
@@ -109,13 +108,16 @@ export default {
   },
   computed: {
     pathTasks() {
-        return this.cards.flatMap(card => 
-        card.tasks.map(task => ({
-            id: task.id,
-            name: task.name,
-            category: task.category || card.class
-        }))
-        ).sort((a, b) => a.id - b.id);  // Sort tasks by global ID to ensure order
+        const tasks = this.cards.flatMap(card => 
+            card.tasks.map(task => ({
+                id: task.id,
+                name: task.name,
+                category: task.category || card.class
+            }))
+        ).sort((a, b) => a.id - b.id); 
+
+        console.log("Updated pathTasks:", tasks); // Log computed pathTasks
+        return tasks;
     }
   },
   watch: {
@@ -126,45 +128,61 @@ export default {
       deep: true
     }
   },
+  mounted() {
+    console.log('Page loaded, generating AI tasks...');
+    this.generateIdeasTasks();
+  },
   methods: {
     async generateIdeasTasks() {
-    try {
-        const response = await fetch('http://localhost:5000/api/generate', {
+        try {
+            console.log('Fetching AI-generated tasks...');
+
+            const response = await fetch('http://localhost:5000/api/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: 'ideas_tasks' }),
-        });
+            });
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch AI-generated tasks');
-        }
+            if (!response.ok) {
+            throw new Error(`Failed to fetch AI-generated tasks, status: ${response.status}`);
+            }
 
-        const data = await response.json();
-        
-        if (data.tasks && Array.isArray(data.tasks)) {
-            const ideasIndex = this.cards.findIndex(card => card.class === 'ideas');
-            if (ideasIndex !== -1) {
-                data.tasks.forEach(task => {
+            const data = await response.json();
+            console.log('Received response:', data);
+
+            // Check if response contains tasks
+            if (data && data.response && Array.isArray(data.response)) {
+                const ideasIndex = this.cards.findIndex(card => card.class === 'ideas');
+                console.log('Ideas card index:', ideasIndex);
+
+                if (ideasIndex !== -1) {
+                    data.response.forEach((task, index) => {
+                    const cleanedTask = task.trim();  // Trim spaces
+
                     this.cards[ideasIndex].tasks.push({
                         id: this.taskCounter++,  
-                        name: task,  
+                        name: cleanedTask,  // Use cleaned task
                         editing: false,
                         category: 'ideas'
                     });
-                });
 
-                // Update localStorage
-                localStorage.setItem('cards', JSON.stringify(this.cards));
-                localStorage.setItem('taskCounter', JSON.stringify(this.taskCounter));
+                    console.log(`Added task: ${cleanedTask}`);
+                    });
+
+                    // Update localStorage
+                    localStorage.setItem('cards', JSON.stringify(this.cards));
+                    localStorage.setItem('tasksCounter', JSON.stringify(this.taskCounter));
+
+                    console.log('Updated cards with tasks:', this.cards);
+                }
+                
+            } else {
+                throw new Error('Invalid response format');
             }
-        } else {
-            throw new Error('Invalid response format');
+        } catch (error) {
+            console.error('Error generating tasks:', error.message);
         }
-    } catch (error) {
-        console.error('Error generating tasks:', error.message);
-    }
-},
-
+    },
     getTaskColor(category) {
       const colors = {
         todo: "#ff6f61",
@@ -203,15 +221,14 @@ export default {
     addTask(index) {
         if (this.cards[index].newTask.trim() !== "") {
             this.cards[index].tasks.push({
-            id: this.taskCounter,  // Assign unique global ID
+            id: this.taskCounter, 
             name: this.cards[index].newTask.trim(),
             editing: false,
             category: this.cards[index].class
             });
 
-            this.taskCounter++;  // Increment the counter for the next task
+            this.taskCounter++; 
 
-            // Save updated counter and cards to localStorage
             localStorage.setItem('taskCounter', JSON.stringify(this.taskCounter));
             localStorage.setItem('cards', JSON.stringify(this.cards));
 
@@ -516,7 +533,7 @@ h1 {
     user-select: none;
     margin-top: 80px;
     width: 100%;
-    max-width: 80%;
+    max-width: 100%;
 }
 
 .path-step {
@@ -551,7 +568,7 @@ h1 {
     border-radius: 5px;
     position: absolute;
     bottom: 110%;
-    left: 50%;
+    left: 40%;
     transform: translateX(-50%);
     font-size: 0.9rem;
     opacity: 0;

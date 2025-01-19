@@ -22,13 +22,13 @@ router.post('/generate', async (req, res) => {
       let aiResponse;
 
       if (type == 'mainGoal') {
-        console.log("I got called, generating main goal");
         aiResponse = await generateMainGoal();
       } 
       else if (type === 'summary') {
         aiResponse = await generateSummary();
       } 
       else if (type === 'ideas_tasks') {
+        console.log("Generating tasks");
         aiResponse = await generateTasks();
       }
       else if (type === 'questions') {

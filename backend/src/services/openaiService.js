@@ -14,7 +14,11 @@ let conversationHistory = [
               "What type of game". No need for examples, only if prompted by the request. The first question they answer is "What's your goal".
               The type of questions can be like: What type of game, what platform, what features and last ask them
               if they know any programming languagues/technologies for their goal. Again a goal could be from making a game to making a website.
-              Every answer will be programmaming related.`,
+              Every answer will be programmaming related. In other words ask them question relating to this category each time:
+              They automatically answer the first question which is "What's your goal". So then you can ask them:,
+              What type of X, If they know any programming languages/technologies for their goal, platform (don't overcomplicate it,
+              if they say mobile dont ask android or ios), and some features.
+              If its a website of course platform isnt revelant so something similar, like their target audience.`,
   },
 ];
 
@@ -42,7 +46,6 @@ const generateResponse = async (prompt) => {
 
 //Function to generate the main goal
 const generateMainGoal = async () => {
-  console.log("I got called inside ai, generating main goal");
   try {
     const response = await client.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -52,13 +55,14 @@ const generateMainGoal = async () => {
           role: 'system',
           content: `Summarize the user's main goal in a few words. For example, if they have talked about making a game, you can
                     respond with just "Creating a (platform, mobile, windows etc ) game". Same with a website, a program etc.
-                    Don't add any other details.`,
+                    Don't add any other details.
+                    If you get called and you have no previous prompts only the one that starts with "You are an assistant" then
+                    reply with "Invalid generateMainGoal call`,
         },
       ],
       max_tokens: 20,
       temperature: 0.3,
     });
-    console.log("I should asnwer with main goal: ", response.choices[0].message.content.trim());
     return response.choices[0].message.content.trim();
   } catch (error) {
     console.error('Error with OpenAI API:', error.response?.data || error.message);
@@ -77,24 +81,16 @@ const generateSummary = async () => {
           role: 'system',
           content: `Provide a detailed summary of the user's goal. For example, if they have talked about making a game, you can say
                     A 2d mobile game with a pve style that fights asteroids as a spaceship. If they have talked about a lot of features,
-                    just mention, "with a lot of twists or features". It doesn't have to be very big, short-medium and concise.`,
+                    just mention, "with a lot of twists or features". It doesn't have to be very big, short-medium and concise. Refer
+                    to the user, say "Your goal is...."
+                    If you get called and you have no previous prompts only the one that starts with "You are an assistant" then
+                    reply with "Invalid generateSummary call"`,
         },
       ],
       max_tokens: 50,
       temperature: 0.3,
     });
 
-    conversationHistory = [
-      {
-        role: 'system',
-        content: `You are an assistant that asks relevant follow-up questions to understand what the user wants to achieve, their goal. 
-                  You only ask the question and nothing else. For example, if they ask you "I want to create a game" you only respond with 
-                  "What type of game". No need for examples, only if prompted by the request. The first question they answer is "What's your goal".
-                  The type of questions can be like: What type of game, what platform, what features and last ask them
-                  if they know any programming languages/technologies for their goal. Again a goal could be from making a game to making a website.
-                  Every answer will be programming related.`,
-      },
-    ];
     return  response.choices[0].message.content.trim();
   } catch (error) {
     console.error('Error with OpenAI API:', error.response?.data || error.message);
@@ -118,15 +114,35 @@ const generateTasks = async () => {
                     3. Design the game mechanics, etc. 
                     4. Learning the programming languages required.
                     Keep the tasks short and concise.
-                    Dont type anything else. Just the tasks.`,
+                    Don't type anything else. Just the tasks.
+                    If you get called and you have no previous prompts only the one that starts with "You are an assistant" then
+                    reply with "Invalid generateTasks call"`,
         },
       ],
       max_tokens: 300,
       temperature: 0.7,
     });
 
-    const taskList = response.choices[0].message.content.trim().split('\n');
-    return taskList.map(task => task.replace(/^\d+\.\s*/, '')); 
+    conversationHistory = [
+      {
+        role: 'system',
+        content: `You are an assistant that asks relevant follow-up questions to understand what the user wants to achieve, their goal. 
+                  You only ask the question and nothing else. For example, if they ask you "I want to create a game" you only respond with 
+                  "What type of game". No need for examples, only if prompted by the request. The first question they answer is "What's your goal".
+                  The type of questions can be like: What type of game, what platform, what features and last ask them
+                  if they know any programming languages/technologies for their goal. Again a goal could be from making a game to making a website.
+                  Every answer will be programming related.`,
+      },
+    ];
+
+    const taskList = response.choices[0].message.content
+    .trim()
+    .split('\n')
+    .map(task => task.replace(/^\d+\.\s*/, '').trim());
+
+    console.log("Processed Task List:\n", taskList);
+
+    return taskList;
   } catch (error) {
     console.error('Error with OpenAI API:', error.response?.data || error.message);
     throw new Error('Failed to generate tasks');
