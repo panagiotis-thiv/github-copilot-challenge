@@ -100,7 +100,7 @@ export default {
   },
   methods: {
     navigateToSite() {
-      this.$router.push({ name: "MainPage" });
+      this.$router.push({ name: "main" });
     },
   }
 };

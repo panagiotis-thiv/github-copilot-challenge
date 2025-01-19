@@ -21,6 +21,9 @@
         <br>And if you have already figured it out. 
         <br>You can help others with their journey too.
         </h3>
+        <h4>
+          Build for the GitHub Copilot Challenge
+        </h4>
       </div>
     </div>
 </template>
@@ -110,7 +113,7 @@ button:active {
   letter-spacing: 0.5px;
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); 
   position: absolute;
-  bottom: 20px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%); 
   width: 100%;
@@ -118,5 +121,9 @@ button:active {
   padding: 10px;
 }
 
+.website-details h4 {
+  font-weight: 200;
+  font-style: italic;
+}
 
 </style>
