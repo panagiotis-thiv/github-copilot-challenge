@@ -114,7 +114,8 @@ export default {
                 name: task.name,
                 category: task.category || card.class
             }))
-        ).sort((a, b) => a.id - b.id); 
+        ).sort((a, b) => a.id - b.id)
+        .slice(0, 10); 
 
         console.log("Updated pathTasks:", tasks); // Log computed pathTasks
         return tasks;
@@ -129,8 +130,12 @@ export default {
     }
   },
   mounted() {
-    console.log('Page loaded, generating AI tasks...');
-    this.generateIdeasTasks();
+    if (this.$route.query.firstLoad === 'true') {
+        console.log('Generating AI tasks');
+        this.generateIdeasTasks();
+
+        this.$router.replace({ name: "MainPage", query: {} });
+  }
   },
   methods: {
     async generateIdeasTasks() {
