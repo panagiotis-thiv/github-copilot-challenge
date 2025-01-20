@@ -38,6 +38,7 @@ export default {
       loadingDetailedSummary: true,
       error: "",
       testMode: false,
+      loadAITasks: true,
     };
   },
   async mounted() {
@@ -51,17 +52,24 @@ export default {
 
     try {
       //Fetch the main goal
-      const mainGoalResponse = await fetch('http://localhost:5000/api/generate', {
+      let response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: 'mainGoal' }),
       });
 
-      if (!mainGoalResponse.ok) {
+      if (!response.ok) {
         throw new Error("Failed to fetch the main goal");
       }
       
-      const mainGoalData = await mainGoalResponse.json();
+      let mainGoalData = await response.json();
+      
+      if (mainGoalData.response === "@NoResponseType2@") {
+          this.loadAITasks = false;
+          this.mainGoal = "Already provided. Reset prompt"
+          return;
+      }
+       
 
       if (mainGoalData.response) {
         this.mainGoal = mainGoalData.response;
@@ -72,17 +80,23 @@ export default {
       }
 
       // Fetch the detailed summary
-      const detailedSummaryResponse = await fetch('http://localhost:5000/api/generate', {
+      response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: 'summary' }),
       });
 
-      if (!detailedSummaryResponse.ok) {
+      if (!response.ok) {
         throw new Error("Failed to fetch the detailed summary");
       }
 
-      const detailedSummaryData = await detailedSummaryResponse.json();
+      const detailedSummaryData = await response.json();
+      
+      if (detailedSummaryData.response === "@NoResponseType3@") {
+        this.detailedSummary = "Already provided. Reset prompt"
+        this.loadAITasks = false;
+        return;
+      }
 
       if (detailedSummaryData.response) {
         this.detailedSummary = detailedSummaryData.response;
@@ -102,7 +116,7 @@ export default {
     navigateToSite() {
       this.$router.push({ 
         name: "MainPage",
-        query: { loadAITasks: true }
+        query: { loadAITasks: this.loadAITasks }
       });
     },
   }

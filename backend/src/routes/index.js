@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { generateResponse, generateMainGoal, generateSummary, generateTasks } = require('../services/openaiService');
+const { generateResponse, generateMainGoal, generateSummary, generateTasks, resetAIPrompts } = require('../services/openaiService');
 
 //To test if backend is working
 router.get('/health', (req, res) => {
@@ -28,8 +28,10 @@ router.post('/generate', async (req, res) => {
         aiResponse = await generateSummary();
       } 
       else if (type === 'ideas_tasks') {
-        console.log("Generating tasks");
         aiResponse = await generateTasks();
+      }
+      else if (type === 'resetPrompt') {
+        aiResponse = await resetAIPrompts();
       }
       else if (type === 'questions') {
         if (!prompt) {

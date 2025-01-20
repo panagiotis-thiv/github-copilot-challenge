@@ -37,6 +37,10 @@
             🗑️
         </div>
 
+        <button class="reset-btn" @click="resetPrompts">
+            Reset Prompts
+        </button>
+
         <div class="cards-container">
             <div 
                 v-for="(card, index) in cards" 
@@ -131,18 +135,42 @@ export default {
   },
   mounted() {
     if (this.$route.query.loadAITasks === 'true') {
-        console.log('Generating AI tasks');
         this.generateIdeasTasks();
-
         this.$router.replace({ name: "MainPage", query: {} });
-  }
+    } else {
+        this.$router.replace({ name: "MainPage", query: {} });
+    }
   },
   methods: {
+    async resetPrompts() {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/generate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'resetPrompt' }),
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to reset prompts, status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.response === "@Success@") {
+                this.cards.forEach(card => card.tasks = []);
+                this.taskCounter = 1;
+                localStorage.setItem('cards', JSON.stringify(this.cards));
+                localStorage.setItem('taskCounter', JSON.stringify(this.taskCounter));
+                return;
+            } 
+
+        } catch (error) {
+            console.error('Error resetting promp:', error.message);
+        }
+    },
     async generateIdeasTasks() {
         try {
-            console.log('Fetching AI-generated tasks...');
-
-            const response = await fetch('http://localhost:5000/api/generate', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/generate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: 'ideas_tasks' }),
@@ -153,32 +181,30 @@ export default {
             }
 
             const data = await response.json();
-            console.log('Received response:', data);
+            
+            if (data.response === "@NoResponseType4@") {
+                return;
+            }
 
             // Check if response contains tasks
             if (data && data.response && Array.isArray(data.response)) {
                 const ideasIndex = this.cards.findIndex(card => card.class === 'ideas');
-                console.log('Ideas card index:', ideasIndex);
 
                 if (ideasIndex !== -1) {
                     data.response.forEach((task, index) => {
-                    const cleanedTask = task.trim();  // Trim spaces
+                        const cleanedTask = task.trim();  // Trim spaces
 
-                    this.cards[ideasIndex].tasks.push({
-                        id: this.taskCounter++,  
-                        name: cleanedTask,  // Use cleaned task
-                        editing: false,
-                        category: 'ideas'
-                    });
-
-                    console.log(`Added task: ${cleanedTask}`);
+                        this.cards[ideasIndex].tasks.push({
+                            id: this.taskCounter++,  
+                            name: cleanedTask,  // Use cleaned task
+                            editing: false,
+                            category: 'ideas'
+                        });
                     });
 
                     // Update localStorage
                     localStorage.setItem('cards', JSON.stringify(this.cards));
-                    localStorage.setItem('tasksCounter', JSON.stringify(this.taskCounter));
-
-                    console.log('Updated cards with tasks:', this.cards);
+                    localStorage.setItem('taskCounter', JSON.stringify(this.taskCounter));
                 }
                 
             } else {
@@ -202,26 +228,26 @@ export default {
       this.cards[index].showInput = !this.cards[index].showInput;
     },
     toggleIdeas() {
-    const ideasIndex = this.cards.findIndex(card => card.class === 'ideas');
-    const helpIndex = this.cards.findIndex(card => card.class === 'help');
+        const ideasIndex = this.cards.findIndex(card => card.class === 'ideas');
+        const helpIndex = this.cards.findIndex(card => card.class === 'help');
 
-    if (this.isIdeasMode && ideasIndex !== -1) {
-        // Switch from Ideas to Help
-        this.cards[ideasIndex].title = "HELP";
-        this.cards[ideasIndex].class = "help";
-    } else if (helpIndex !== -1) {
-        // Switch from Help to Ideas
-        this.cards[helpIndex].title = "IDEAS";
-        this.cards[helpIndex].class = "ideas";
-    } else {
-        console.error("The card was not found in the array.");
-        return;
-    }
+        if (this.isIdeasMode && ideasIndex !== -1) {
+            // Switch from Ideas to Help
+            this.cards[ideasIndex].title = "HELP";
+            this.cards[ideasIndex].class = "help";
+        } else if (helpIndex !== -1) {
+            // Switch from Help to Ideas
+            this.cards[helpIndex].title = "IDEAS";
+            this.cards[helpIndex].class = "ideas";
+        } else {
+            console.error("The card was not found in the array.");
+            return;
+        }
 
-    this.isIdeasMode = !this.isIdeasMode;
-    
-    // Force reactivity to update
-    this.cards = [...this.cards];
+        this.isIdeasMode = !this.isIdeasMode;
+        
+        // Force reactivity to update
+        this.cards = [...this.cards];
     },
     addTask(index) {
         if (this.cards[index].newTask.trim() !== "") {
@@ -670,6 +696,26 @@ h1 {
 .ideas-btn:hover .tooltip-btn {
     visibility: visible;
     opacity:1;
+}
+
+.reset-btn {
+    position: absolute;
+    top: 20px;
+    left: 80px;  /* Position next to the trash can */
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    border: none;
+    background: #c93b3b;  /* Red background */
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.reset-btn:hover {
+    background: #a90303;  /* Darker red on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 </style>

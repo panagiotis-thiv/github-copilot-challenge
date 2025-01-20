@@ -40,7 +40,7 @@ export default {
       // Remove explosion after animation and redirect
       setTimeout(() => {
         explosion.remove();
-        window.location.href = '/questions';
+        this.$router.push({ name: 'QuestionsPage' });
       }, 1500);
     },
   },

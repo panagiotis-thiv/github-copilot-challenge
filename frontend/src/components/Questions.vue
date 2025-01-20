@@ -48,7 +48,7 @@ export default {
 
         try {
           // Send user input to the backend API
-          const response = await fetch('http://localhost:5000/api/generate', {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/generate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: 'questions', prompt: this.userInput }),
@@ -62,6 +62,11 @@ export default {
           }
 
           const data = await response.json();
+          
+          if (data.response === "@NoResponseType1@") {
+              this.question = "You have already answered. You have to clear the promts from the main page to generate new tasks.";
+              return;
+          }
 
           if (data.response) {
             this.question = data.response;

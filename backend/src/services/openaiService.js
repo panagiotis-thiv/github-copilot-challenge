@@ -1,11 +1,12 @@
-// Import OpenAI
+//Importing OpenAI
 const OpenAI = require('openai');
 
-// Initialize OpenAI API directly with your key
+//Initializing the OpenAI API key
 const client = new OpenAI({
   apiKey: process.env["OPENAI_API_KEY"],
 });
 
+//A conversation history to keep track of the conversation and have the full history of the user for the AI.
 let conversationHistory = [
   {
     role: 'system',
@@ -22,8 +23,21 @@ let conversationHistory = [
   },
 ];
 
-//Function to generate a response
+//Count how many times the generateResponse is called
+let responseCount = {
+  count: 0, 
+  responseCompleted: false, 
+};
+
+//Function to generate a response according to the users answers
 const generateResponse = async (prompt) => {
+
+  if (responseCount.responseCompleted) {
+    return "@NoResponseType1@";
+  }
+
+  responseCount.count++;
+
   conversationHistory.push({ role: 'user', content: prompt });
 
   try {
@@ -37,6 +51,10 @@ const generateResponse = async (prompt) => {
     const assistantMessage = response.choices[0].message.content.trim();
     conversationHistory.push({ role: 'assistant', content: assistantMessage });
 
+    if (responseCount.count >= 5) {
+      responseCount.responseCompleted = true;
+    }
+
     return assistantMessage;
   } catch (error) {
     console.error('Error with OpenAI API:', error.response?.data || error.message);
@@ -44,9 +62,18 @@ const generateResponse = async (prompt) => {
   }
 };
 
+//Bool for other functions
+let mainGoalBool = false;
+let summaryBool = false;
+let tasksBool = false;
+
 //Function to generate the main goal
 const generateMainGoal = async () => {
+
+  if (mainGoalBool) return "@NoResponseType2@";
+
   try {
+    mainGoalBool = true;
     const response = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
@@ -72,7 +99,11 @@ const generateMainGoal = async () => {
 
 //Function to generate the detailed summary
 const generateSummary = async () => {
+
+  if (summaryBool) return "@NoResponseType3@";
+
   try {
+    summaryBool = true;
     const response = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
@@ -99,7 +130,10 @@ const generateSummary = async () => {
 };
 
 const generateTasks = async () => {
+  if (tasksBool) return "@NoResponseType4@";
+
   try {
+    tasksBool = true;
     const response = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
@@ -123,24 +157,12 @@ const generateTasks = async () => {
       temperature: 0.7,
     });
 
-    conversationHistory = [
-      {
-        role: 'system',
-        content: `You are an assistant that asks relevant follow-up questions to understand what the user wants to achieve, their goal. 
-                  You only ask the question and nothing else. For example, if they ask you "I want to create a game" you only respond with 
-                  "What type of game". No need for examples, only if prompted by the request. The first question they answer is "What's your goal".
-                  The type of questions can be like: What type of game, what platform, what features and last ask them
-                  if they know any programming languages/technologies for their goal. Again a goal could be from making a game to making a website.
-                  Every answer will be programming related.`,
-      },
-    ];
-
     const taskList = response.choices[0].message.content
     .trim()
     .split('\n')
     .map(task => task.replace(/^\d+\.\s*/, '').trim());
 
-    console.log("Processed Task List:\n", taskList);
+    // console.log("Processed Task List:\n", taskList);
 
     return taskList;
   } catch (error) {
@@ -149,4 +171,28 @@ const generateTasks = async () => {
   }
 };
 
-module.exports = { generateResponse, generateMainGoal, generateSummary, generateTasks };
+
+const resetAIPrompts = async () => {
+  responseCount.count = 0;
+  responseCount.responseCompleted = false;
+
+  mainGoalBool = false;
+  summaryBool = false;
+  tasksBool = false;
+
+  conversationHistory = [
+    {
+      role: 'system',
+      content: `You are an assistant that asks relevant follow-up questions to understand what the user wants to achieve, their goal. 
+                You only ask the question and nothing else. For example, if they ask you "I want to create a game" you only respond with 
+                "What type of game". No need for examples, only if prompted by the request. The first question they answer is "What's your goal".
+                The type of questions can be like: What type of game, what platform, what features and last ask them
+                if they know any programming languages/technologies for their goal. Again a goal could be from making a game to making a website.
+                Every answer will be programming related.`,
+    },
+  ];
+
+  return "@Success@";
+};
+
+module.exports = { generateResponse, generateMainGoal, generateSummary, generateTasks, resetAIPrompts};
